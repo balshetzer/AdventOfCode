@@ -3,84 +3,97 @@
 import fileinput
 import operator
 import itertools
+from collections import deque
 
-lines = fileinput.input()
+class Machine:
+    def __init__(self, program, input, output):
+        self.mem = program.copy()
+        self.pc = 0
+        self.input = input
+        self.output = output
+        
+    def _read_param(self, index):
+      mode = self.mem[self.pc]//(10*10**index)%10
+      direct = self.mem[self.pc+index]
+      if mode == 1:
+          return direct
+      return self.mem[direct]
 
-def param(pc, mem, index):
-    mode = mem[pc]//(10*10**index)%10
-    if mode == 0:
-        return mem[mem[pc+index]]
-    else:
-        return mem[pc+index]
-
-global_inputs = []
-global_outputs = []
-
-def input(pc, mem):
-    mem[mem[pc+1]] = next(global_inputs)
-    return pc+2
-
-def output(pc, mem):
-    p1 = param(pc, mem, 1)
-    global_outputs.append(p1)
-    return pc+2
-
-def ternary_op(pc, mem, op):
-    p1 = param(pc, mem, 1)
-    p2 = param(pc, mem, 2)
-    mem[mem[pc+3]] = int(op(p1, p2))
-    return pc+4
-
-def add(pc, mem):
-    return ternary_op(pc, mem, operator.add)
+    def _write_param(self, index, value):
+        self.mem[self.mem[self.pc+index]] = value
     
-def mul(pc, mem):
-    return ternary_op(pc, mem, operator.mul)
+    def _ternary(self, op):
+        p1 = self._read_param(1)
+        p2 = self._read_param(2)
+        self._write_param(3, int(op(p1, p2)))
+        self.pc += 4
+        
+    def _input(self):
+        if (len(self.input)) == 0:
+            return
+        self._write_param(1, self.input.popleft())
+        self.pc += 2
+        
+    def _output(self):
+        p1 = self._read_param(1)
+        self.output.append(p1)
+        self.pc += 2
+        
+    def _add(self):
+        self._ternary(operator.add)
+        
+    def _mul(self):
+        self._ternary(operator.mul)
+        
+    def _jump_if(self, op):
+        p1 = self._read_param(1)
+        p2 = self._read_param(2)
+        self.pc = p2 if op(p1) else self.pc+3
+        
+    def _jump_if_true(self):
+        self._jump_if(operator.truth)
+        
+    def _jump_if_false(self):
+        self._jump_if(operator.not_)
 
-def jump_if_true(pc, mem):
-    p1 = param(pc, mem, 1)
-    p2 = param(pc, mem, 2)
-    return p2 if p1 != 0 else pc+3
+    def _less_than(self):
+        self._ternary(operator.lt)
+        
+    def _equals(self):
+        self._ternary(operator.eq)
 
-def jump_if_false(pc, mem):
-    p1 = param(pc, mem, 1)
-    p2 = param(pc, mem, 2)
-    return p2 if p1 == 0 else pc+3
+    def _halt(self):
+        pass
 
-def less_than(pc, mem):
-    return ternary_op(pc, mem, operator.lt)
-    
-def equals(pc, mem):
-    return ternary_op(pc, mem, operator.eq)
+    opcodes = {1: _add, 2: _mul, 3: _input, 4: _output, 
+               5: _jump_if_true, 6: _jump_if_false, 7: _less_than, 
+               8: _equals, 99: _halt}
 
-def halt(pc, mem):
-    return pc
-    
-opcodes = {1: add, 2: mul, 3: input, 4: output, 5: jump_if_true, 
-           6: jump_if_false, 7: less_than, 8: equals, 99: halt}
+    def step(self):
+        self.opcodes[self.mem[self.pc]%100](self)
 
-def interpret(pc, mem):
-    return opcodes[mem[pc]%100](pc, mem)
-    
-def run(mem):
-    pc = 0
-    while True:
-        oldpc, pc = pc, interpret(pc, mem)
-        if oldpc == pc:
-            break
+    def run(self):
+        while True:
+            oldpc = self.pc
+            self.step()
+            if self.pc == oldpc:
+                break
 
-program = list(map(int, next(lines).strip().split(',')))
+    def halted(self):
+        return self.mem[self.pc] == 99
+        
+    def waiting_on_input(self):
+        return self.mem[self.pc] == 3
 
 def run_sequence(params):
-    global global_inputs
-    global global_outputs
-    signal = 0
-    for param in params:
-        global_inputs = iter((param, signal))
-        global_outputs = []
-        run(program.copy())
-        signal = global_outputs[-1]
-    return signal
+    pipes = [deque([p]) for p in params]
+    pipes.append(deque())
+    machines = [Machine(program, pipes[i], pipes[i+1]) for i in range(len(params))]
+    pipes[0].append(0)
+    for m in machines:
+        m.run()
+    return pipes[-1][0]
 
-
+lines = fileinput.input()
+program = list(map(int, next(lines).strip().split(',')))
 print(max(map(run_sequence, itertools.permutations((0, 1, 2, 3, 4)))))
