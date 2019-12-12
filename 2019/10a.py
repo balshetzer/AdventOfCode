@@ -4,7 +4,9 @@ import fileinput
 import math
 from collections import defaultdict
 
-def num_visible(p, asteroids):
+asteroids = [(x, y) for y, line in enumerate(fileinput.input()) for x, cell in enumerate(line.strip()) if cell == '#']
+
+def num_visible(p):
   visible = set()
   for asteroid in asteroids:
     if p == asteroid:
@@ -15,5 +17,4 @@ def num_visible(p, asteroids):
     visible.add(v)
   return len(visible)
 
-asteroids = [(x, y) for y, line in enumerate(fileinput.input()) for x, cell in enumerate(line.strip()) if cell == '#']
-print(max(map(lambda p: num_visible(p, asteroids), asteroids)))
+print(max(map(num_visible, asteroids)))

@@ -3,9 +3,11 @@
 import fileinput
 import math
 from itertools import groupby
-from more_itertools import roundrobin
+from more_itertools import roundrobin, nth
 
-def num_visible(p, asteroids):
+asteroids = [(x, y) for y, line in enumerate(fileinput.input()) for x, cell in enumerate(line.strip()) if cell == '#']
+
+def num_visible(p):
   visible = set()
   for asteroid in asteroids:
     if p == asteroid:
@@ -16,7 +18,9 @@ def num_visible(p, asteroids):
     visible.add(v)
   return len(visible)
 
-def angle(base, p):
+base = max(asteroids, key=num_visible)
+
+def angle(p):
   '''Gives the clockwise angle to the up direction from base for p. 
   
   i.e. if you take a vector from base up and from base to p this is
@@ -24,15 +28,8 @@ def angle(base, p):
   reach the up vector.'''
   return (math.atan2(p[1]-base[1], p[0]-base[0]) + math.pi/2 + 2 * math.pi) % (2 * math.pi)
 
-def ordered(base, asteroids):
-  angletobase = lambda x: angle(base, x)
-  disttobase = lambda x: math.dist(base, x)
-  asteroids = sorted(asteroids, key=angletobase)
-  angle_groups = [sorted(group, key=disttobase) for _, group in groupby(asteroids, key=angletobase)]
-  return list(roundrobin(*angle_groups))
-
-asteroids = [(x, y) for y, line in enumerate(fileinput.input()) for x, cell in enumerate(line.strip()) if cell == '#']
-base = max(asteroids, key=lambda p: num_visible(p, asteroids))
-order = ordered(base, asteroids)
-winner = order[199]
+dist = lambda x: math.dist(base, x)
+asteroids.sort(key=angle)
+angle_groups = [sorted(group, key=dist) for _, group in groupby(asteroids, key=angle)]
+winner = nth(roundrobin(*angle_groups), 199)
 print(winner[0]*100 + winner[1])
