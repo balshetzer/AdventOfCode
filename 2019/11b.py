@@ -20,7 +20,7 @@ while True:
   dir = (dir[1], -dir[0]) if turn == 0 else (-dir[1], dir[0])
   position = tuple(map(operator.add, dir, position))
 
-exes, whys = map(list, zip(*surface.keys()))
+exes, whys = map(list, zip(*(k for k, v in surface.items() if v == 1)))
 for y in range(min(whys), max(whys) + 1):
   for x in range(min(exes), max(exes) + 1):
     print('#' if surface[(x, y)] == 1 else ' ', end='')
