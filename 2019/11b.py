@@ -3,7 +3,6 @@
 import fileinput
 from collections import defaultdict
 from intcode import Interpreter
-import itertools
 import operator
 
 program = next(fileinput.input())
@@ -11,8 +10,7 @@ program = next(fileinput.input())
 machine = Interpreter(program)
 position = (0,0)
 dir = (0, -1)
-surface = defaultdict(int)
-surface[position] = 1
+surface = defaultdict(int, {position: 1})
 while True:
   paint = machine.run(input=surface[position], output=True)
   if paint is None:
@@ -23,12 +21,7 @@ while True:
   position = tuple(map(operator.add, dir, position))
 
 exes, whys = map(list, zip(*surface.keys()))
-
-minx = min(exes)
-maxx = max(exes)
-miny = min(whys)
-maxy = max(whys)
-for y in range(miny, maxy + 1):
-  for x in range(minx, maxx + 1):
+for y in range(min(whys), max(whys) + 1):
+  for x in range(min(exes), max(exes) + 1):
     print('#' if surface[(x, y)] == 1 else ' ', end='')
   print()
