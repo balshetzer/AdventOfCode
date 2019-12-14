@@ -126,6 +126,18 @@ class Interpreter:
       if self.pc == oldpc:
         break
 
+  def __iter__(self):
+      return self
+
+  def __next__(self):
+    while True:
+      if len(self.output) > 0:
+        return self.output.popleft()
+      oldpc = self.pc
+      self.step()
+      if self.pc == oldpc:
+        raise StopIteration
+
   def halted(self):
     return self.mem[self.pc] == 99
 
