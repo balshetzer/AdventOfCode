@@ -1,11 +1,8 @@
 #!/usr/bin/env python3
 
 import fileinput
-from collections import namedtuple, deque, defaultdict
-from math import ceil
-
-def lcm(*nums):
-  return reduce(lambda a, b: a * b // gcd(a, b), nums)
+from collections import namedtuple, defaultdict
+import math
 
 Ingredient = namedtuple('Ingredient', ['amount', 'compound'])
 Recipe = namedtuple('Recipe', ['inputs', 'output'])
@@ -20,34 +17,29 @@ def parse_recipe(s):
                 parse_ingredient(output))
 
 recipes = {recipe.output.compound: recipe for recipe in map(parse_recipe, fileinput.input())}
+intermediates = set(r.output.compound for r in recipes.values() if r.output.compound != 'FUEL')
 
-ore = 0
-want = deque([Ingredient(1, 'FUEL')])
-have = defaultdict(int)
+def cook(pantry, track=set()):
+  def follow(recipe, multiple):
+    for i in recipe.inputs:
+      pantry[i.compound] -= multiple * i.amount
+    pantry[recipe.output.compound] += multiple * recipe.output.amount
 
-while want:
-  cur = want.pop()
-  print("We want:", cur)
-  if cur.compound == 'ORE':
-    ore += cur.amount
-    print("We get it all from the mines!")
-    continue
-  if (reserve := have[cur.compound]) > 0:
-    print("We have", reserve, "in reserve")
-    if reserve >= cur.amount:
-      have[cur.compound] -= cur.amount
-      print("We take", reserve, "and leave", have[cur.compound], "in the store")
-    else:
-      have[cur.compound] -= reserve
-      want.append(Ingredient(cur.amount-reserve, cur.compound))
-      print("We take", reserve, "and still need", cur.amount-reserve)
-    continue
-  recipe = recipes[cur.compound]
-  multiple = ceil(cur.amount / recipe.output.amount)
-  print("We'll make it with", multiple, "times", recipe)
-  print("We'll need", multiple * recipe.inputs)
-  want.extend(recipe.inputs * multiple)
-  have[recipe.output.compound] += multiple * recipe.output.amount - cur.amount
-  print("And make an extra", multiple * recipe.output.amount - cur.amount, cur.compound)
+  def need():
+    while True:
+      l = [(compound, -amount) for compound, amount in pantry.items() if compound not in track and amount < 0]
+      if not l:
+        return
+      for i in l:
+        yield i
 
-print(ore)
+  for compound, amount in need():
+    if compound not in recipes:
+      raise Exception("Can't make " + compound)
+    recipe = recipes[compound]
+    multiple = math.ceil(amount / recipe.output.amount)
+    follow(recipe, multiple)
+
+pantry = defaultdict(int, {'FUEL': -1})
+cook(pantry, ['ORE'])
+print(-pantry['ORE'])

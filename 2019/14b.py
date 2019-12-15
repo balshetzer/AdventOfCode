@@ -3,7 +3,8 @@
 import fileinput
 from collections import namedtuple, deque, defaultdict
 import math
-import bisect
+from bisect import bisect
+import sys
 
 Ingredient = namedtuple('Ingredient', ['amount', 'compound'])
 Recipe = namedtuple('Recipe', ['inputs', 'output'])
@@ -36,23 +37,18 @@ def cook(pantry, track=set()):
 
   for compound, amount in need():
     if compound not in recipes:
-      return False
+      raise Exception("Can't make " + compound)
     recipe = recipes[compound]
     multiple = math.ceil(amount / recipe.output.amount)
     follow(recipe, multiple)
-  return True
 
 class OreForFuel:
-  def __init__(self, size):
-    self._size = size
-    
   def __len__(self):
-    return self._size
-    
+    return sys.maxsize
+
   def __getitem__(self, amount):
     pantry = defaultdict(int, {'FUEL': -amount})
-    if not cook(pantry, ['ORE']):
-      print("failed to make fuel")
+    cook(pantry, ['ORE'])
     return -pantry['ORE']
 
-print(bisect.bisect_left(OreForFuel(1000000000000), 1000000000000)-1)
+print(bisect(OreForFuel(), 1000000000000)-1)
