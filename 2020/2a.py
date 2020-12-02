@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 
 import fileinput
-import re
+import parse
+
+parser = parse.compile("{:d}-{:d} {:w}: {:w}")
 
 def valid(s):
-  m = re.match(r'(\d+)-(\d+) (\w): (\w+)', s)
-  min, max = map(int, m.group(1, 2))
-  c = m.group(3)
-  p = m.group(4)
+  min, max, c, p = parser.parse(s).fixed
   return min <= p.count(c) <= max
 
 print(sum(valid(line) for line in fileinput.input()))
