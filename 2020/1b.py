@@ -2,16 +2,18 @@
 
 import fileinput
 
-nums = {int(line.strip()) for line in fileinput.input()}
+nums = [int(line.strip()) for line in fileinput.input()]
 
-def f(sum):
-  for num in nums:
+def f(sum, nums):
+  while nums:
+    num = nums.pop()
     other = sum - num
     if other in nums:
       return num * other
 
-for num in nums:
-  others = f(2020-num)
+while nums:
+  num = nums.pop()
+  others = f(2020-num, nums.copy())
   if others:
     print(num * others)
     break

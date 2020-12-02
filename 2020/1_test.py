@@ -1,10 +1,15 @@
 from testutil import table
 
 def test_a():
-  table('1a', (sample, '514579\n'), (input, '468051\n'))
+  table('1a', (sample, '514579\n'), (input, '468051\n'), (duplicates, '1020100\n'))
 
 def test_b():
-  table('1b', (sample, '241861950\n'), (input, '272611658\n'))
+  table('1b', (sample, '241861950\n'), (input, '272611658\n'), (duplicates, '257575250\n'))
+
+duplicates = '''1010
+1010
+505
+505'''
   
 sample = '''1721
 979

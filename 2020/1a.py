@@ -2,9 +2,10 @@
 
 import fileinput
 
-nums = {int(line.strip()) for line in fileinput.input()}
+nums = [int(line.strip()) for line in fileinput.input()]
 
-for num in nums:
+while nums:
+  num = nums.pop()
   other = 2020-num
   if other in nums:
     print(num * other)
