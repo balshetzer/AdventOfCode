@@ -2,7 +2,7 @@
 
 import fileinput
 
-nums = set(int(line.strip()) for line in fileinput.input())
+nums = {int(line.strip()) for line in fileinput.input()}
 
 for num in nums:
   other = 2020-num
