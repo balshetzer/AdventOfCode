@@ -6,8 +6,8 @@ def runner(script):
   '''Return a test runner for the given script.'''
   def run(input, output):
     completed = subprocess.run("./" + script + ".py", input=input, text=True, capture_output=True)
-    assert completed.returncode == 0
-    assert completed.stdout == output
+    assert completed.returncode == 0, f"Program returned {completed.returncode}"
+    assert completed.stdout == output, f"Got: '{completed.stdout}', Want: '{output}'"
   return run
   
 def table(script, *cases):
