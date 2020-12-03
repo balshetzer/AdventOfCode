@@ -1,10 +1,14 @@
 #!/usr/bin/env python3
 
 import fileinput
+from math import prod
+from itertools import starmap
+
+slopes = [(1,1), (3,1), (5,1), (7,1), (1, 2)]
 
 hill = [line.strip() for line in fileinput.input()]
 
-def count(dx, dy):
+def trees(dx, dy):
   x = 0
   y = 0
   trees = 0
@@ -17,4 +21,4 @@ def count(dx, dy):
     trees += line[x%len(line)] == '#'
   return trees
 
-print(count(1, 1) * count(3, 1) * count(5, 1) * count(7, 1) * count(1, 2))
+print(prod(starmap(trees, slopes)))
