@@ -1,10 +1,10 @@
 from testutil import table
 
 def test_a():
-  table('2a', (sample, '2\n'), (input, '628\n'))
+  table('2a', (sample, '2'), (input, '628'))
 
 def test_b():
-  table('2b', (sample, '1\n'), (input, '705\n'))
+  table('2b', (sample, '1'), (input, '705'))
   
 sample = '''1-3 a: abcde
 1-3 b: cdefg

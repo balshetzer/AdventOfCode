@@ -7,7 +7,8 @@ def runner(script):
   def run(input, output):
     completed = subprocess.run("./" + script + ".py", input=input, text=True, capture_output=True)
     assert completed.returncode == 0, f"Program returned {completed.returncode}: {completed.stderr}"
-    assert completed.stdout == output, f"Got: '{completed.stdout}', Want: '{output}'"
+    got = completed.stdout.strip()
+    assert got == output, f"Got: '{got}', Want: '{output}'"
   return run
   
 def table(script, *cases):
