@@ -3,6 +3,8 @@
 import re
 import sys
 
+input = open(sys.argv[1]) if len(sys.argv) == 2 else sys.stdin
+
 validators = {
   'byr': lambda v: 1920 <= int(v) <= 2002,
   'iyr': lambda v: 2010 <= int(v) <= 2020,
@@ -16,4 +18,4 @@ validators = {
 def valid(p):
   return all(v(p[k]) if k in p else False for k, v in validators.items())
 
-print(sum(valid(dict(field.split(':') for field in block.split())) for block in open(sys.argv[1]).read().split('\n\n')))
+print(sum(valid(dict(field.split(':') for field in block.split())) for block in input.read().split('\n\n')))
