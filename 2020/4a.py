@@ -1,23 +1,8 @@
 #!/usr/bin/env python3
 
-import fileinput
+import sys
 
-valid = 0
-current = 0
-for line in fileinput.input():
-  line = line.strip()
-  if len(line) == 0:
-    if current == 7:
-      valid += 1
-    current = 0
-    
-  fields = line.split()
-  for field in fields:
-    key = field.split(':')[0]
-    if key != 'cid':
-      current += 1
-else:
-  if current == 7:
-    valid += 1
-    
-print(valid)
+def valid(p):
+  return len(p) - ('cid' in p) == 7
+
+print(sum(valid(dict(field.split(':') for field in block.split())) for block in open(sys.argv[1]).read().split('\n\n')))

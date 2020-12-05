@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-import fileinput
 import re
+import sys
 
 validators = {
   'byr': lambda v: 1920 <= int(v) <= 2002,
@@ -13,22 +13,7 @@ validators = {
   'pid': lambda v: re.fullmatch(r'\d{9}', v),
 }
 
-valid = 0
-current = 0
-for line in fileinput.input():
-  line = line.strip()
-  if len(line) == 0:
-    if current == 7:
-      valid += 1
-    current = 0
-    
-  fields = line.split()
-  for field in fields:
-    key, value = field.split(':')
-    if key != 'cid' and validators[key](value):
-      current += 1
-else:
-  if current == 7:
-    valid += 1
-    
-print(valid)
+def valid(p):
+  return all(v(p[k]) if k in p else False for k, v in validators.items())
+
+print(sum(valid(dict(field.split(':') for field in block.split())) for block in open(sys.argv[1]).read().split('\n\n')))
