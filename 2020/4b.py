@@ -17,7 +17,6 @@ valid = 0
 current = 0
 for line in fileinput.input():
   line = line.strip()
-  print(line)
   if len(line) == 0:
     if current == 7:
       valid += 1
