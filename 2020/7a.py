@@ -20,7 +20,6 @@ wanted = {'shiny gold'}
 containers = set()
 
 while wanted:
-  print(wanted)
   wanted = {key for key, value in rules.items() if any(re.search(r'\d ' + bag + ' bag', value) for bag in wanted)}
   containers |= wanted
   

@@ -24,7 +24,6 @@ def contains(bag):
     return 0
   total = 0
   for entry in v.split(', '):
-    print(entry)
     n, rest = entry.split(' ', 1)
     n = int(n)
     bag, _ = rest.rsplit(' ', 1)
