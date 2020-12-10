@@ -25,9 +25,13 @@ target = first_invalid()
 
 def find():
   for i in range(len(data)):
-    for j in range(i+1, len(data)):
+    for j in range(i+2, len(data)):
       seq = data[i:j]
-      if sum(seq) == target:
+      s = sum(seq)
+      if s == target:
         return min(seq) + max(seq)
-        
+      if s > target:
+        break
+
+data.reverse()
 print(find())
