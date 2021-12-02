@@ -9,4 +9,4 @@ def valid(s):
   x, y, c, p = parser.parse(s).fixed
   return (p[x-1] == c) != (p[y-1] == c)
 
-print(sum(valid(line) for line in fileinput.input()))
+print(sum(valid(line.strip()) for line in fileinput.input()))

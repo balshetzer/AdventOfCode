@@ -9,4 +9,4 @@ def valid(s):
   min, max, c, p = parser.parse(s).fixed
   return min <= p.count(c) <= max
 
-print(sum(valid(line) for line in fileinput.input()))
+print(sum(valid(line.strip()) for line in fileinput.input()))
