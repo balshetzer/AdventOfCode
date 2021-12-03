@@ -12,11 +12,6 @@ def runner(asserter, script):
     asserter(completed.stdout.strip(), str(output))
   return run
 
-def table(asserter, script, *cases):
-  '''Run the given script against all the test cases.'''
-  script = runner(asserter, script)
-  consume(starmap(script, cases))
-
 def table(asserter, num, a, b=[]):
   script = runner(asserter, f"{num:02d}a")
   consume(starmap(script, a))
