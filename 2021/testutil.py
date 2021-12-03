@@ -4,17 +4,22 @@ from more_itertools import consume
 
 # Helpers for pytest testing
 
-def runner(script):
+def runner(asserter, script):
   '''Return a test runner for the given script.'''
   def run(input, output):
-    completed = subprocess.run("./" + script + ".py", input=input, text=True, capture_output=True)
-    assert completed.returncode == 0, f"Program returned {completed.returncode}: {completed.stderr}"
-    got = completed.stdout.strip()
-    assert got == output, f"Got: '{got}', Want: '{output}'"
+    completed = subprocess.run("./" + script + ".py", input=input, text=True,
+      stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    asserter(completed.stdout.strip(), str(output))
   return run
-  
-def table(script, *cases):
+
+def table(asserter, script, *cases):
   '''Run the given script against all the test cases.'''
-  if isinstance(script, str):
-    script = runner(script)
+  script = runner(asserter, script)
   consume(starmap(script, cases))
+
+def table(asserter, num, a, b=[]):
+  script = runner(asserter, f"{num:02d}a")
+  consume(starmap(script, a))
+  if b:
+    script = runner(asserter, f"{num:02d}b")
+    consume(starmap(script, b))

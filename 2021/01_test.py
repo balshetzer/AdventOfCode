@@ -1,10 +1,10 @@
 from testutil import table
 
-def test_a():
-  table('01a', (sample, '7'), (input, '1681'))
+def asserter(a, b):
+  assert a == b
 
-def test_b():
-  table('01b', (sample, '5'), (input, '1704'))
+def test():
+  table(asserter, 1, [(sample, 7), (input, 1681)], [(sample, 5), (input, 1704)])
 
 sample = '''199
 200
