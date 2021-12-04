@@ -3,10 +3,6 @@
 import fileinput
 import statistics
 
-from more_itertools import unzip
-from functools import reduce
-from operator import xor
-
 data = [line.strip() for line in fileinput.input()]
 
 def mode(l):
