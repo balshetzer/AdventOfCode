@@ -4,7 +4,7 @@ def asserter(a, b):
   assert a == b
 
 def test():
-  table(asserter, 2, [(sample, 150), (input, 2039256)], [(sample, '900'), (input, '1856459736')])
+  table(asserter, 2, [(sample, 150), (input, 2039256)], [(sample, 900), (input, 1856459736)])
 
 sample = '''forward 5
 down 5
