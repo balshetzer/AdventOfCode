@@ -8,7 +8,6 @@ from math import copysign
 
 p = parse.compile('{:d},{:d} -> {:d},{:d}')
 lines = (p.parse(line.strip()).fixed for line in fileinput.input())
-lines = filter(lambda q: q[0] == q[2] or q[1] == q[3],lines)
 
 def move(a, b, n):
   'Get an iterator that advances a to b n times, repeating b as needed.'
