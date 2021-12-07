@@ -1,10 +1,14 @@
 #!/usr/bin/env python3
 
 import fileinput
+from collections import Counter
 
 nums = list(map(int, next(fileinput.input()).strip().split(',')))
+fish = Counter(nums)
+
 for i in range(80):
-  nums = list(map(lambda x: x - 1, nums))
-  births = sum(1 if x == -1 else 0 for x in nums)
-  nums = list(map(lambda x: 6 if x == -1 else x, nums)) + [8]*births
-print(len(nums))
+  fish = Counter({k-1:v for k,v in fish.items()})
+  if (spawn := fish[-1]) != 0:
+    fish[8], fish[6] = spawn, fish[6] + spawn
+    del fish[-1]
+print(fish.total())

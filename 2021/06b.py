@@ -8,7 +8,7 @@ fish = Counter(nums)
 
 for i in range(256):
   fish = Counter({k-1:v for k,v in fish.items()})
-  if -1 in fish:
-    fish[8], fish[6] = fish[-1], fish[6] + fish[-1]
+  if (spawn := fish[-1]) != 0:
+    fish[8], fish[6] = spawn, fish[6] + spawn
     del fish[-1]
 print(fish.total())
