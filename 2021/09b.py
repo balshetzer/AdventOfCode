@@ -23,10 +23,12 @@ for p in filter(lambda p: p in grid, product(range(width), range(height))):
       colors[left] = up
       grid[p] = up
 
-def resolve(color):
+for color in colors:
+  original = color
   while (newcolor := colors[color]) != color:
     color = newcolor
-  return color
+  if original != color:
+    colors[original] = color 
 
-top = Counter(map(resolve, grid.values())).most_common(3)
+top = Counter(colors[color] for color in grid.values()).most_common(3)
 print(reduce(mul, (count for color, count in top)))
