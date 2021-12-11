@@ -7,7 +7,7 @@ from functools import reduce
 from more_itertools import chunked
 
 lines = (line.strip() for line in fileinput.input())
-ends = {closer: opener for opener, closer in chunked('()[]{}<>', 2, True)}
+ends = {')': '(', ']': '[', '}': '{', '>': '<'}
 bounty = {'(': 1, '[': 2, '{': 3, '<': 4}
 
 def score(line):
