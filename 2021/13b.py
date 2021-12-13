@@ -3,6 +3,7 @@
 import fileinput
 from collections import defaultdict
 import parse
+from ascii_art import image_to_text
 
 lines = (line.strip() for line in fileinput.input())
 
@@ -36,7 +37,5 @@ for line in lines:
 width = max(x for x, y in grid) + 1
 height = max(y for x, y in grid) + 1
 
-for y in range(height):
-  for x in range(width):
-    print('#' if (x,y) in grid else ' ', end='')
-  print()
+image = '\n'.join(''.join('#' if (x,y) in grid else ' ' for x in range(width)) for y in range(height))
+print(image_to_text(image))
