@@ -1,41 +1,37 @@
 #!/usr/bin/env python3
 
 import fileinput
-from collections import defaultdict
 import parse
 from ascii_art import image_to_text
+from itertools import takewhile
+from operator import truth
 
-lines = (line.strip() for line in fileinput.input())
+def run():
+  lines = (line.strip() for line in fileinput.input())
 
-parse_point = parse.compile('{:d},{:d}')
+  parse_point = parse.compile('{:d},{:d}')
+  grid = set(parse_point.parse(line) for line in takewhile(truth, lines))
 
-grid = defaultdict(int)
-for line in lines:
-  if line == '':
-    break
-    
-  grid[parse_point.parse(line).fixed] = 1
+  parse_fold = parse.compile('fold along {:w}={:d}')
 
-parse_fold = parse.compile('fold along {:w}={:d}')
+  def folder(axis, coord):
+    def fold(foo):
+      if foo < coord:
+        return foo
+      return coord - (foo - coord)
+    if axis == 'x':
+      return lambda p: (fold(p[0]), p[1])
+    return lambda p: (p[0], fold(p[1]))
 
-for line in lines:
-  folded = {}
-  axis, coord = parse_fold.parse(line).fixed
-  match axis:
-    case 'y':
-      for x, y in grid:
-        if y > coord:
-          y = coord - (y - coord)
-        folded[x,y] = 1
-    case 'x':
-      for x, y in grid:
-        if x > coord:
-          x = coord - (x - coord)
-        folded[x,y] = 1
-  grid = folded
+  for line in lines:
+    axis, coord = parse_fold.parse(line).fixed
+    fold = folder(axis, coord)
+    grid = {fold(p) for p in grid}
 
-width = max(x for x, y in grid) + 1
-height = max(y for x, y in grid) + 1
+  width = max(x for x, y in grid) + 1
+  height = max(y for x, y in grid) + 1
 
-image = '\n'.join(''.join('#' if (x,y) in grid else ' ' for x in range(width)) for y in range(height))
-print(image_to_text(image))
+  image = '\n'.join(''.join('#' if (x,y) in grid else ' ' for x in range(width)) for y in range(height))
+  print(image_to_text(image))
+
+run()
