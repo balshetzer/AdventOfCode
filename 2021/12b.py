@@ -20,7 +20,7 @@ def run():
         pass
       elif n == 'end':
         finished += 1
-      elif n[0].isupper():
+      elif n.isupper():
         paths.append((n, visited, doubled))
       elif not n in visited:
         paths.append((n, visited | {n}, doubled))
