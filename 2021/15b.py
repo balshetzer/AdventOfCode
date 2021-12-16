@@ -2,6 +2,8 @@
 
 import fileinput
 import heapq
+from collections import defaultdict
+import math
 
 def run():
   add = lambda a, b: (a[0] + b[0], a[1] + b[1])
@@ -15,7 +17,7 @@ def run():
   # manhattan distance as heuristic
   heuristic = lambda p: end[0] - p[0] + end[1] - p[1]
 
-  costs = {start: 0} # lowest cost known to get to each node
+  costs = defaultdict(lambda: math.inf, {start: 0}) # lowest cost known to get to each node
   neighbors = lambda p: filter(inside, (add(p, d) for d in dirs))
   q = [(heuristic(start), start)] # cost + heuristic, node
   while q:
@@ -26,7 +28,7 @@ def run():
     cost -= heuristic(node)
     for neighbor in neighbors(node):
       neighbor_score = cost + risk(*neighbor)
-      if neighbor not in costs or neighbor_score < costs[neighbor]:
+      if neighbor_score < costs[neighbor]:
         heapq.heappush(q, (neighbor_score + heuristic(neighbor), neighbor))
         costs[neighbor] = neighbor_score
 
