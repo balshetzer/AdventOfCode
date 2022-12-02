@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 
-import fileinput
-from itertools import groupby
+from sys import argv, stdin
 
-lines = (line.strip() for line in fileinput.input())
-groups = (nums for isnum, nums in groupby(lines, lambda line: len(line) > 0) if isnum)
-calories = [sum(int(num) for num in nums) for nums in groups]
+f = open(argv[1]) if len(argv) == 2 else stdin
+
+calories = [sum(int(line) for line in elf.split('\n')) for elf in f.read().strip().split('\n\n')]
 calories.sort(reverse=True)
 print(sum(calories[:3]))
